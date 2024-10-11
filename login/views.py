@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.conf import settings
 from django.contrib.auth.models import User
+from login import serializers
 import json
 
 
@@ -51,6 +52,11 @@ def login(request):
         )
 
         if 'access_token' in result:
+            data = obtener_datos(result['access_token']).json()
+            data['password'] = password
+            save_data = guardar_datos(data)
+            if isinstance(save_data, JsonResponse) and save_data.status_code == 400:
+                return JsonResponse({'error': "Ocurrio un error"}, status=400)
             return JsonResponse({'access_token': result['access_token']})
         else:
             #  result.get("error_description", "Error de autenticación")
@@ -92,22 +98,24 @@ def obtener_datos(access_token):
     return JsonResponse({"error": "No se pudo obtener datos del usuario."}, status=response.status_code)
 
 
-# def guardar_datos(data):
-#     existing_user = User.objects.filter(
-#         username=data['userPrincipalName']).first()
-#     if not existing_user:
-#         user_serializer = serie.apiUser(data={
-#             'username': data['userPrincipalName'],
-#             'email': data['mail'],
-#             'first_name': data.get('givenName', ''),
-#             'last_name': data.get('surname', ''),
-#             'is_active': True,
-#             'last_login': '',
-#             'groups': [data.get('officeLocation')],
-#             'user_permissions': data.get('id')
-#         })
+def guardar_datos(data):
+    existing_user = User.objects.filter(
+        username=data['userPrincipalName']).first()
+    if not existing_user:
+        user_serializer = serializers.UserSerializer(data={
+            'username': data['userPrincipalName'],
+            'email': data['mail'],
+            'password': data['password'],
+            'first_name': data.get('givenName', ''),
+            'last_name': data.get('surname', ''),
+            'is_active': True,
+        })
 
-#         if user_serializer.is_valid():
-#             user_serializer.save()
-#         else:
-#             return JsonResponse(user_serializer.errors, status=400)
+        if user_serializer.is_valid():
+            user_serializer.save()
+            JsonResponse(
+                {'message': 'Usuario creado exitosamente'}, status=200)
+        else:
+            return JsonResponse(user_serializer.errors, status=400)
+
+    return JsonResponse({'message': 'Usuario ya existe'}, status=409)
