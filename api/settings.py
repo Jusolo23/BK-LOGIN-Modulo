@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -142,9 +143,9 @@ REST_FRAMEWORK = {
 # Configuracion libreria MSAL
 
 MSAL_CONFIG = {
-    'CLIENT_ID': 'e0ade322-98b9-46ba-9ac4-22c18724363d',
-    'CLIENT_SECRET': 'cQd8Q~qkCpXzM_RR~jO3ylbAUBxCIZo1YXFRPbm9',
-    'AUTHORITY': 'https://login.microsoftonline.com/58ec5e61-0ed7-4021-a4f8-c2e2b3b9f5ff',
+    'CLIENT_ID': config("CLIENT_ID"),
+    'CLIENT_SECRET': config("CLIENT_SECRET"),
+    'AUTHORITY': config("AUTHORITY"),
     'SCOPE': ['User.Read'],
 }
 
@@ -172,4 +173,4 @@ CORS_ALLOW_METHODS = [
 
 # Clave de reCAPTCHA
 
-RECAPTCHA_SECRET_KEY = '6LeC9F0qAAAAAGCeYAkFjeptoPC_Uj9FZQ-hn_NM'
+RECAPTCHA_SECRET_KEY = config("RECAPTCHA_SECRET_KEY")
