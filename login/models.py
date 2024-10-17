@@ -1,21 +1,15 @@
-# from django.db import models
-# from django.contrib.contenttypes.fields import GenericRelation
-# from django.contrib.contenttypes.models import ContentType
-# from django.contrib.auth.models import User, Group
+from django.db import models
 
 
-# class Sesiones(models.Model):
-#     id_sesion = models.SmallAutoField(primary_key=True)
-#     usuario = models.ForeignKey(
-#         User, to_field='id', on_delete=models.CASCADE)
-#     estado = models.BooleanField()
-#     datos_sesion = models.CharField()
-#     celular_dos = models.CharField(max_length=15, blank=True, null=True)
-#     celular_emergencia = models.CharField(max_length=15, blank=True, null=True)
+class Sesiones(models.Model):
+    id_sesion = models.SmallAutoField(primary_key=True)
+    usuario_ip = models.GenericIPAddressField()
+    estado = models.CharField(max_length=100)
+    datos_sesion = models.CharField(max_length=255)
 
-#     class Meta:
-#         db_table = 'eco_con_ctelefono'
-#         verbose_name_plural = 'Datos de contacto'
+    class Meta:
+        db_table = 'eco_log_sesiones'
+        verbose_name_plural = 'Datos de sesiones'
 
-#     def __str__(self):
-#         return str(self.id_ctelefono)
+    def __str__(self):
+        return str(self.id_sesion)
